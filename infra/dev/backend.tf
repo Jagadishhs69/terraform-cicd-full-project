@@ -4,6 +4,5 @@ terraform {
     key = "terraform-state-cicd-33993333/qa/terraform.tfstate"
     region = "ap-south-1"
     encrypt = true
-  
   }
 }
