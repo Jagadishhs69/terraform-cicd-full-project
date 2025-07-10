@@ -26,10 +26,10 @@ jobs:
 
       - name: Terraform Init
         run: |
-          cd infra
+          cd infra/dev
           terraform init
 
       - name: Terraform Plan
         run: |
-          cd infra
+          cd infra/dev
           terraform plan
