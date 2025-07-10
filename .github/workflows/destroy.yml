@@ -1,0 +1,52 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to destroy (dev or qa)'
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Terraform Init
+        run: |
+          terraform -chdir=infra/${{ github.event.inputs.environment }} init -reconfigure -upgrade \
+            -backend-config="bucket=terraform-state-cicd-33993333" \
+            -backend-config="key=${{ github.event.inputs.environment }}/terraform.tfstate" \
+            -backend-config="region=ap-south-1" \
+            -backend-config="dynamodb_table=${{ github.event.inputs.environment }}-terraform-lock"
+
+      - name: Terraform Destroy
+        run: terraform -chdir=infra/${{ github.event.inputs.environment }} destroy -auto-approve
+
+      - name: Verify Resource Cleanup
+        run: |
+          terraform -chdir=infra/${{ github.event.inputs.environment }} state list
+          if [ $(terraform -chdir=infra/${{ github.event.inputs.environment }} state list | wc -l) -eq 0 ]; then
+            echo "All resources successfully destroyed."
+          else
+            echo "Error: Some resources were not destroyed."
+            exit 1
+          fi

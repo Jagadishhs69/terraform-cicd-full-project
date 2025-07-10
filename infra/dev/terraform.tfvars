@@ -1,0 +1,13 @@
+region                  = "ap-south-1"
+dev_vpc_cidr           = "10.0.0.0/16"
+dev_public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+dev_private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
+availability_zones      = ["ap-south-1a", "ap-south-1b"]
+ami_id                  = "ami-0f918f7e67a3323f0" # Updated Ubuntu 24.04 LTS AMI
+instance_type           = "t2.micro"
+rds_engine              = "postgres"
+rds_engine_version      = "16.9"
+rds_instance_class      = "db.t3.micro"
+rds_allocated_storage   = 20
+db_username             = "appadmin2"
+db_password             = "securepassword123"
