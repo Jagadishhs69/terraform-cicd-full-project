@@ -45,6 +45,6 @@ jobs:
       - name: Terraform apply
         run: |
           cd infra/qa
-          terraform apply
+          terraform apply -auto-approve
 
       
