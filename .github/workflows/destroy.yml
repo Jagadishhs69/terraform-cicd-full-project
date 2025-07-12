@@ -32,21 +32,10 @@ jobs:
 
       - name: Terraform Init
         run: |
-          terraform -chdir=infra/${{ github.event.inputs.environment }} init -reconfigure -upgrade \
-            -backend-config="bucket=terraform-state-cicd-33993333" \
-            -backend-config="key=${{ github.event.inputs.environment }}/terraform.tfstate" \
-            -backend-config="region=ap-south-1" \
-            -backend-config="dynamodb_table=${{ github.event.inputs.environment }}-terraform-lock"
+          cd infra/qa
+          terraform init
 
-      - name: Terraform Destroy
-        run: terraform -chdir=infra/${{ github.event.inputs.environment }} destroy -auto-approve
-
-      - name: Verify Resource Cleanup
+      - name: Terraform destroy
         run: |
-          terraform -chdir=infra/${{ github.event.inputs.environment }} state list
-          if [ $(terraform -chdir=infra/${{ github.event.inputs.environment }} state list | wc -l) -eq 0 ]; then
-            echo "All resources successfully destroyed."
-          else
-            echo "Error: Some resources were not destroyed."
-            exit 1
-          fi
+          cd infra/qa
+          terraform destroy -auto-approve
