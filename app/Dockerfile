@@ -1,9 +1,9 @@
-FROM node:16
+FROM node:latest
 
 WORKDIR /usr/src/app
 
 COPY src/package*.json ./
-RUN npm install
+RUN npm install && npm audit fix --force
 
 COPY src/ .
 
